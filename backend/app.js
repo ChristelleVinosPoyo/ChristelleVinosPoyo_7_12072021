@@ -113,22 +113,21 @@ app.post('/api/users/login', (req, res, next) => {
 
 // deletePost - à revoir
 app.delete('/api/posts/:id', (req, res, next) => {
-  const postId = req.params.id;
-  console.log(postId);
-  db.query(`DELETE FROM posts WHERE id = ${postId}`, (err, data) => {
+  console.log(req.params.id);
+  db.query(`DELETE FROM posts WHERE id = '${req.params.id}'`, (err, data) => {
     if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
     res.status(200).json({ message: 'Votre message a été supprimé !'});
   })
 });
 
-// const user = {
-  //   firstname: req.body.firstname,
-  //   lastname: req.body.lastname,
-  //   email: req.body.email,
-  //   password: req.body.password,
-  //   age: req.body.age,
-  //   picture: req.body.picture
-  // };
+// deleteUser - à revoir
+app.delete('/api/users/:id', (req, res, next) => {
+  console.log(req.params.id);
+  db.query(`DELETE FROM users WHERE id = '${req.params.id}'`, (err, data) => {
+    if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+    res.status(200).json({ message: 'Votre compte a été supprimé !'});
+  })
+});
   
   // const { Sequelize } = require('sequelize');
 // connexion à MySQL avec Sequelize
@@ -143,4 +142,5 @@ app.delete('/api/posts/:id', (req, res, next) => {
 // } catch (error) {
 //   console.error('Impossible de se connecter, erreur suivante :', error);
 // }
+
 module.exports = app;
