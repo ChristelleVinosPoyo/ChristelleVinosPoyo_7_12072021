@@ -1,5 +1,7 @@
 const http = require('http'); // import package http de Node
 const app = require('./app');
+require('./config/db_config');
+
 
 // normalisePort renvoie un port valide qu'il soit un numéro ou une chaîne
 const normalizePort = val => { 
