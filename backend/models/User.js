@@ -45,18 +45,4 @@ module.exports = User;
 // });
 
 
-// Ancien model créé avec mongoose :
-
-// const mongoose = require('mongoose');
-
-// const uniqueValidator = require('mongoose-unique-validator');
-
-// const userSchema = mongoose.Schema({
-//     email: { type: String, required: true, unique: true },
-//     password: { type: String, required: true }
-// });
-
-// userSchema.plugin(uniqueValidator); // pour ne pas avoir plusieurs utilisateurs avec la même adresse mail.
-
-// module.exports = mongoose.model('User', userSchema);
 console.log(User === sequelize.models.User); // true

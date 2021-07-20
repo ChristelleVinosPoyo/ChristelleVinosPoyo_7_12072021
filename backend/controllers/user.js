@@ -3,13 +3,17 @@ const db = require('../config/db_config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
-
-exports.getUser = (req, res, next) => {
-  db.query(`SELECT * FROM users WHERE id = ${req.params.id}` , (err, data) => {
+exports.getAllUser = (req, res, next) => {
+  db.query(`SELECT firstname, lastname, age, picture FROM users` , (err, data) => {
     if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
     res.send(data);
-    console.log(data);
+  })
+}
+
+exports.getUser = (req, res, next) => {
+  db.query(`SELECT firstname, lastname, age, picture FROM users WHERE id = ${req.params.id}` , (err, data) => {
+    if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+    res.send(data);
   })
 }
 

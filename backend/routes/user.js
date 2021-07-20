@@ -5,7 +5,7 @@ const db = require('../config/db_config');
 require('dotenv').config();
 const userCtrl = require('../controllers/user');
 
-
+router.get('/', userCtrl.getAllUser);
 router.get('/:id', userCtrl.getUser);
 router.post('/signup', userCtrl.signup)
 router.post('/login', userCtrl.login);
