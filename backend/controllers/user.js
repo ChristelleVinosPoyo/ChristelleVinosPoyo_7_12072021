@@ -55,8 +55,14 @@ exports.login = (req, res, next) => {
   }
 
 exports.deleteUser = (req, res, next) => {
-  db.query(`DELETE FROM users WHERE id = ${req.params.id}`, (err, data) => {
-      if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
-      res.status(200).json({ message: 'Votre compte a été supprimé !'});
-  })
+  console.log(req.body);
+  if (((req.params.id == req.body.userId) && (req.body.admin == 0)) || req.body.admin != 0) {
+      db.query(`DELETE FROM users WHERE id = ${req.params.id}`, (err, data) => {
+          if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+          res.status(200).json({ message: 'Le compte utilisateur a été supprimé !'});
+      })
+  }
+  if ((req.params.id != req.body.userId) && (req.body.admin == 0)) {
+      return res.status(400).send({ message: "Vous ne pouvez pas supprimer un compte utilisateur qui ne vous appartient pas." })
+  }
 }
