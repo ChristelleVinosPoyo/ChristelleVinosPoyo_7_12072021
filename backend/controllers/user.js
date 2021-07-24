@@ -2,6 +2,8 @@ const mysql = require('mysql2');
 const db = require('../config/db_config'); 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+
 
 exports.getAllUser = (req, res, next) => {
   db.query(`SELECT firstname, lastname, age, picture FROM users` , (err, data) => {
@@ -11,17 +13,18 @@ exports.getAllUser = (req, res, next) => {
 }
 
 exports.getUser = (req, res, next) => {
-  db.query(`SELECT firstname, lastname, age, picture FROM users WHERE id = ${req.params.id}` , (err, data) => {
+  db.query(`SELECT firstname, lastname, age, picture FROM users WHERE id = ?`, [req.params.id], (err, data) => {
     if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
     res.send(data);
   })
 }
 
 exports.signup = (req, res, next) =>{
+  const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
   bcrypt.hash(req.body.password, 10) // 10 tours d'execution de l'algorythme de hashage
   .then(hash => {
       console.log(hash);
-      db.query(`INSERT INTO users (id, firstname, lastname, email, password, age, picture) VALUES (NULL, '${req.body.firstname}', '${req.body.lastname}', '${req.body.email}', '${hash}', ${req.body.age}, '${req.body.picture}')`, (err, data) => {
+      db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [req.body.firstname, req.body.lastname, req.body.email, hash, req.body.age, pictureUrl], (err, data) => {
       if (err) { return res.status(400).json({ err }) };
       res.status(200).json({ message: 'Votre compte a bien été créé !'});
       }
@@ -31,7 +34,7 @@ exports.signup = (req, res, next) =>{
 
 exports.login = (req, res, next) => {
   // rechercher du hash dans la BDD
-  db.query(`SELECT * FROM users WHERE email='${req.body.email}'`, (err, data) => {
+  db.query(`SELECT * FROM users WHERE email= ?`, [req.body.email], (err, data) => {
       if (err) { return res.status(400).send({ message: "utilisateur non trouvé !" }) };
       console.log(data);
       bcrypt.compare(req.body.password, data[0].password)
@@ -42,8 +45,8 @@ exports.login = (req, res, next) => {
       }
       // res.status(200).send({ message: "utilisateur connecté !" })
       res.status(200).json({ 
-          userId: data[0].id,
-          admin: data[0].admin,
+          //userId: data[0].id,
+          //admin: data[0].admin,
           token: jwt.sign( // le token sécurise l'échange des données : il valide le droit de l'utilisateur à accéder aux ressources
               { userId: data[0].id }, // 1er argument : ce qu'on veut encoder
               process.env.TOKEN_KEY, // 2eme argument : clé secrète d'encodage
@@ -66,3 +69,21 @@ exports.deleteUser = (req, res, next) => {
       return res.status(400).send({ message: "Vous ne pouvez pas supprimer un compte utilisateur qui ne vous appartient pas." })
   }
 }
+
+exports.modifyUser = (req, res, next) => {
+  
+}
+
+exports.getUserId = (req, res, next) => {
+  // recupération du userId à partir du TOKEN :
+  const token = req.body.token; 
+  const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+  const userId = decodedToken.userId; // userId récupéré à partir du token decodé
+  // récupération du niveau admin à partir du userId :
+  db.query(`SELECT admin FROM users WHERE id = ?`, [userId], (err, data) => {
+    if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+    res.status(200).json({
+      userId : userId,
+      admin : data[0].admin});
+  })
+};

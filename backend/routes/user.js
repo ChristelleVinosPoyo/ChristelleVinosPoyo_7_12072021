@@ -11,5 +11,7 @@ router.get('/:id', auth, userCtrl.getUser);
 router.post('/signup', multer, userCtrl.signup)
 router.post('/login', userCtrl.login);
 router.delete('/:id', userCtrl.deleteUser);
+// test
+router.post('/userId', userCtrl.getUserId);
 
 module.exports = router;
