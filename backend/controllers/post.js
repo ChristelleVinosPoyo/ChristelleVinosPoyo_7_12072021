@@ -10,7 +10,7 @@ exports.getAllPost = (req, res, next) => {
 
 exports.createPost = (req, res, next) => {
     console.log(req.body.post);
-    db.query(`INSERT INTO posts (post, user_id, data_of_post) VALUES (?, ?, CURRENT_TIMESTAMP)`, [req.body.post, req.body.user_id], 
+    db.query(`INSERT INTO posts (post, user_id, data_of_post) VALUES (?, ?, CURRENT_TIMESTAMP)`, [req.body.post, req.body.userId], 
     (err, data) => {
       if (err) { return res.status(400).json({ err }) };
       console.log(err);
@@ -19,12 +19,14 @@ exports.createPost = (req, res, next) => {
 }
 
 exports.modifyPost = (req, res, next) => {
+    // vérification du userId de la requête (qu'il corresponde bien au user_id du profil)
     const postId = req.params.id;
     db.query(`SELECT user_id FROM posts WHERE id = ?`, [postId], (err, data) => {
         if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
         if (data[0].user_id != req.body.userId) {
         res.status(400).send({ message: "modification impossible : ce message appartient à un autre utilisateur." })
         };
+        // modification du message :
         if (data[0].user_id == req.body.userId) {
         db.query(`UPDATE posts SET post = ? WHERE id = ?`, [req.body.post, req.params.id], (err, data) => {
             if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };

@@ -11,7 +11,7 @@ router.get('/:id', auth, userCtrl.getUser);
 router.post('/signup', multer, userCtrl.signup)
 router.post('/login', userCtrl.login);
 router.delete('/:id', userCtrl.deleteUser);
-// test
-router.post('/userId', userCtrl.getUserId);
+router.post('/:id', multer, userCtrl.modifyUser);
+router.post('/userId', userCtrl.getUserId); // route qui renvoie le userId et l'admin à partir du token
 
 module.exports = router;

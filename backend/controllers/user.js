@@ -19,12 +19,13 @@ exports.getUser = (req, res, next) => {
   })
 }
 
+// req à envoyer en form-data !
 exports.signup = (req, res, next) =>{
   const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-  bcrypt.hash(req.body.password, 10) // 10 tours d'execution de l'algorythme de hashage
+  const user = JSON.parse(req.body.user);
+  bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
   .then(hash => {
-      console.log(hash);
-      db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [req.body.firstname, req.body.lastname, req.body.email, hash, req.body.age, pictureUrl], (err, data) => {
+      db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash,user.age, pictureUrl], (err, data) => {
       if (err) { return res.status(400).json({ err }) };
       res.status(200).json({ message: 'Votre compte a bien été créé !'});
       }
@@ -71,7 +72,23 @@ exports.deleteUser = (req, res, next) => {
 }
 
 exports.modifyUser = (req, res, next) => {
-  
+  // vérification du userId de la requête (qu'il corresponde bien au user_id du profil à modifier)
+  // requête à envoyer en form-data !
+  const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  const user = JSON.parse(req.body.user);
+  console.log(user);
+  if (req.params.id === user.userId){
+    bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
+    .then(hash => {
+      db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl, req.body.userId], (err, data) => {
+        if (err) { return res.status(400).json({ err }) };
+        res.status(200).json({ message: 'Votre compte a bien été modifié !'});
+      })
+    })
+  }
+  if (req.params.id != user.userId){
+    res.status(400).json({ message: 'Modification impossible !'});
+  }
 }
 
 exports.getUserId = (req, res, next) => {
