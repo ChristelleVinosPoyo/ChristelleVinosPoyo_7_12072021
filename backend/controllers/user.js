@@ -25,7 +25,7 @@ exports.signup = (req, res, next) =>{
   const user = JSON.parse(req.body.user);
   bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
   .then(hash => {
-      db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash,user.age, pictureUrl], (err, data) => {
+      db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl], (err, data) => {
       if (err) { return res.status(400).json({ err }) };
       res.status(200).json({ message: 'Votre compte a bien été créé !'});
       }
@@ -37,14 +37,11 @@ exports.login = (req, res, next) => {
   // rechercher du hash dans la BDD
   db.query(`SELECT * FROM users WHERE email= ?`, [req.body.email], (err, data) => {
       if (err) { return res.status(400).send({ message: "utilisateur non trouvé !" }) };
-      console.log(data);
       bcrypt.compare(req.body.password, data[0].password)
       .then(valid => {
-      console.log(data);
       if (!valid) {
           return res.status(401).json({ error: 'Mot de passe incorrect ! ' })
       }
-      // res.status(200).send({ message: "utilisateur connecté !" })
       res.status(200).json({ 
           //userId: data[0].id,
           //admin: data[0].admin,
@@ -59,28 +56,38 @@ exports.login = (req, res, next) => {
   }
 
 exports.deleteUser = (req, res, next) => {
-  console.log(req.body);
-  if (((req.params.id == req.body.userId) && (req.body.admin == 0)) || req.body.admin != 0) {
-      db.query(`DELETE FROM users WHERE id = ${req.params.id}`, (err, data) => {
-          if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
-          res.status(200).json({ message: 'Le compte utilisateur a été supprimé !'});
-      })
-  }
-  if ((req.params.id != req.body.userId) && (req.body.admin == 0)) {
+  // recupération du userId à partir du TOKEN :
+  const token = req.headers.authorization.split(' ')[1]; 
+  const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+  const userId = decodedToken.userId; // userId récupéré à partir du token decodé
+  console.log(userId);
+  // récupération du niveau admin à partir du userId :
+  db.query(`SELECT admin FROM users WHERE id = ?`, [userId], (err, data) => {
+    if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+    const admin = data[0].admin;
+    console.log(admin);
+    // suppression du compte si les droits admin le permettent
+    if ((req.params.id != userId) && (admin == 0)) {
       return res.status(400).send({ message: "Vous ne pouvez pas supprimer un compte utilisateur qui ne vous appartient pas." })
-  }
+    }
+    if (((req.params.id == userId) && (admin === 0)) || req.body.admin != 0){
+      db.query(`DELETE FROM users WHERE id = ?`, [req.params.id], (err, data) => {
+        if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+        res.status(200).json({ message: 'Le compte utilisateur a été supprimé !'});
+      })
+    }
+  })
 }
 
 exports.modifyUser = (req, res, next) => {
-  // vérification du userId de la requête (qu'il corresponde bien au user_id du profil à modifier)
   // requête à envoyer en form-data !
+  // vérification du userId de la requête (qu'il corresponde bien au user_id du profil à modifier)
   const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
   const user = JSON.parse(req.body.user);
-  console.log(user);
   if (req.params.id === user.userId){
     bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
     .then(hash => {
-      db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl, req.body.userId], (err, data) => {
+      db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl, user.userId], (err, data) => {
         if (err) { return res.status(400).json({ err }) };
         res.status(200).json({ message: 'Votre compte a bien été modifié !'});
       })
@@ -92,6 +99,8 @@ exports.modifyUser = (req, res, next) => {
 }
 
 exports.getUserId = (req, res, next) => {
+  // console.log(userId);
+  // res.status(200).send(userId)
   // recupération du userId à partir du TOKEN :
   const token = req.body.token; 
   const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
@@ -103,4 +112,12 @@ exports.getUserId = (req, res, next) => {
       userId : userId,
       admin : data[0].admin});
   })
+  // recupération du userId à partir du TOKEN :
+  // const token = req.headers.authorization.split(' ')[1]; 
+  // const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+  // const userId = decodedToken.userId; // userId récupéré à partir du token decodé
+  // console.log(userId);
+  // res.status(200).json({
+  //   userId : userId,
+  // })
 };
