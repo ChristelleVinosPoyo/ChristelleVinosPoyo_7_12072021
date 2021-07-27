@@ -10,11 +10,9 @@ exports.getAllPost = (req, res, next) => {
 }
 
 exports.createPost = (req, res, next) => {
-    console.log(req.body.post);
     db.query(`INSERT INTO posts (post, user_id, data_of_post) VALUES (?, ?, CURRENT_TIMESTAMP)`, [req.body.post, req.body.userId], 
     (err, data) => {
       if (err) { return res.status(400).json({ err }) };
-      console.log(err);
       res.status(201).json({ message: 'Votre message a été posté !'});
     });
 }
@@ -25,7 +23,6 @@ exports.modifyPost = (req, res, next) => {
     const userId = req.body.userId;
     db.query(`SELECT user_id FROM posts WHERE id = ?`, [postId], (err, data) => {
         const postUserId = data[0].user_id
-        console.log(postUserId);
         if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
         if (postUserId != userId) {
         res.status(400).send({ message: "modification impossible : ce message appartient à un autre utilisateur." })
@@ -45,7 +42,6 @@ exports.deletePost = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1]; 
     const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
     const userId = decodedToken.userId; 
-    console.log(userId);
     // récupération du user_id du post
     db.query(`SELECT user_id FROM posts WHERE id = ?`, [req.params.id], (err, data) => {
       const postUserId = data[0].user_id;

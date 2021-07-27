@@ -1,8 +1,9 @@
 const db = require('../config/db_config');
 const mysql = require('mysql2')
+const jwt = require('jsonwebtoken');
 
-exports.getAllComment = (req, res, next) => {
-    db.query("SELECT * FROM comments", (err, data) => {
+exports.getPostComments = (req, res, next) => {
+    db.query(`SELECT * FROM comments WHERE post_id = ?`, [req.params.postId], (err, data) => {
       if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
       res.send(data);
     })
@@ -12,7 +13,6 @@ exports.createComment = (req, res, next) => {
     db.query(`INSERT INTO comments (comment, post_id, user_id, data_of_comment) VALUES (?, ?, ?, CURRENT_TIMESTAMP)`, [req.body.comment, req.body.post_id, req.body.user_id], 
     (err, data) => {
       if (err) { return res.status(400).json({ err }) };
-      console.log(err);
       res.status(201).json({ message: 'Votre commentaire a été posté !'});
     });
 }
@@ -49,4 +49,28 @@ exports.deleteComment = (req, res, next) => {
         }
     })
     
+}
+exports.deleteComment = (req, res, next) => {
+    // recupération du userId du front à partir du TOKEN :
+    const token = req.headers.authorization.split(' ')[1]; 
+    const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+    const userId = decodedToken.userId; 
+    // récupération du user_id du commentaire
+    db.query(`SELECT user_id FROM comments WHERE id = ?`, [req.params.id], (err, data) => {
+      const commentUserId = data[0].user_id;
+      if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+      // récupération du niveau admin à partir du userId :
+      db.query(`SELECT admin FROM users WHERE id = ?`, [userId], (err, data) => {
+        const admin = data[0].admin;
+        if ((commentUserId != userId) && (admin === 0)) {
+            return res.status(400).send({ message: "Vous ne pouvez pas supprimer un message qui ne vous appartient pas." })
+          }
+        if (((commentUserId === userId) && (admin === 0)) || admin != 0){
+        db.query(`DELETE FROM comments WHERE id = ?`, [req.params.id], (err, data) => {
+            if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+            res.status(200).json({ message: 'Le message a été supprimé !'});
+        })
+        }
+      })
+    });
 }

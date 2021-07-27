@@ -23,13 +23,20 @@ exports.getUser = (req, res, next) => {
 exports.signup = (req, res, next) =>{
   const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
   const user = JSON.parse(req.body.user);
-  bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
-  .then(hash => {
-      db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl], (err, data) => {
-      if (err) { return res.status(400).json({ err }) };
-      res.status(200).json({ message: 'Votre compte a bien été créé !'});
-      }
-      )
+  // vérification de la non existence de l'email
+  db.query(`SELECT * FROM users WHERE email = ?`, [user.email], (err, data) => {
+    if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+    if (data.length === 0){
+      bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
+      .then(hash => {
+          db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl], (err, data) => {
+          if (err) { return res.status(400).json({ err }) };
+          res.status(200).json({ message: 'Votre compte a bien été créé !'});
+          }
+          )
+      })
+    }
+    else { return res.status(400).send({ message: "Un compte utilisateur existe déjà avec cette adress mail!" }) }
   })
 }
 
@@ -60,12 +67,10 @@ exports.deleteUser = (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1]; 
   const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
   const userId = decodedToken.userId; // userId récupéré à partir du token decodé
-  console.log(userId);
   // récupération du niveau admin à partir du userId :
   db.query(`SELECT admin FROM users WHERE id = ?`, [userId], (err, data) => {
     if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
     const admin = data[0].admin;
-    console.log(admin);
     // suppression du compte si les droits admin le permettent
     if ((req.params.id != userId) && (admin == 0)) {
       return res.status(400).send({ message: "Vous ne pouvez pas supprimer un compte utilisateur qui ne vous appartient pas." })
@@ -99,8 +104,6 @@ exports.modifyUser = (req, res, next) => {
 }
 
 exports.getUserId = (req, res, next) => {
-  // console.log(userId);
-  // res.status(200).send(userId)
   // recupération du userId à partir du TOKEN :
   const token = req.body.token; 
   const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
@@ -112,12 +115,4 @@ exports.getUserId = (req, res, next) => {
       userId : userId,
       admin : data[0].admin});
   })
-  // recupération du userId à partir du TOKEN :
-  // const token = req.headers.authorization.split(' ')[1]; 
-  // const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-  // const userId = decodedToken.userId; // userId récupéré à partir du token decodé
-  // console.log(userId);
-  // res.status(200).json({
-  //   userId : userId,
-  // })
 };

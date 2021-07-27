@@ -5,7 +5,7 @@ const db = require('../config/db_config');
 const commentCtrl = require('../controllers/comment');
 const auth = require('../middleware/auth');
 
-router.get('/', auth, commentCtrl.getAllComment);
+router.get('/:postId', commentCtrl.getPostComments);
 router.post('/', auth, commentCtrl.createComment);
 router.put('/:id', auth, commentCtrl.modifyComment);
 router.delete('/:id', commentCtrl.deleteComment);
