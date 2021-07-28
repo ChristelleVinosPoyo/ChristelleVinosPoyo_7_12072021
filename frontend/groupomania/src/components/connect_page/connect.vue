@@ -1,7 +1,7 @@
 <template>
     <div>
         <img class="logo" alt="Vue logo" src="../../assets/logo.png">
-        <h1>Bienvenue sur le réseau social</h1>
+        <h1>Bienvenue sur votre réseau social</h1>
         <div>
             <button v-on:click="toggleLoginFct">Connexion</button>
             <button v-on:click="toggleSignupFct">S'inscrire</button>
@@ -14,7 +14,6 @@
 <script>
     import login from './_login.vue'
     import signup from './_signup.vue'
-    import axios from 'axios'
     
     export default {
         name: 'Connect',
@@ -23,12 +22,6 @@
                 toggleSignup: false,
                 toggleLogin: true
             }
-        },
-        mounted(){
-            axios.get('http://localhost:3000/api/posts')
-            .then(res => {
-                console.log(res);
-            })
         },
         methods: {
 

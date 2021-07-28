@@ -29,4 +29,7 @@
     }
   }
 }
+button {
+  color: #d1515a;
+}
 </style>
