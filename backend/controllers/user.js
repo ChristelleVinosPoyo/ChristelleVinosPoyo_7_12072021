@@ -5,7 +5,7 @@ const fs = require('fs');
 
 
 exports.getAllUser = (req, res, next) => {
-  db.query(`SELECT firstname, lastname, age, picture FROM users` , (err, data) => {
+  db.query(`SELECT firstname, lastname, email, age, picture FROM users` , (err, data) => {
     if (err) { 
       return res.status(400).send({ message: "une erreur est survenue !" }) 
     };
@@ -14,7 +14,7 @@ exports.getAllUser = (req, res, next) => {
 }
 
 exports.getUser = (req, res, next) => {
-  db.query(`SELECT firstname, lastname, age, picture FROM users WHERE id = ?`, [req.params.id], (err, data) => {
+  db.query(`SELECT firstname, lastname, email, age, picture FROM users WHERE id = ?`, [req.params.id], (err, data) => {
     if (err) { 
       return res.status(400).send({ message: "une erreur est survenue !" }) 
     };

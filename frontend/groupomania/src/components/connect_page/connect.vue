@@ -23,6 +23,9 @@
                 toggleLogin: true
             }
         },
+        beforeCreate() {
+            localStorage.clear();
+        },
         methods: {
 
             toggleLoginFct : function(){
