@@ -1,6 +1,6 @@
 <template>
     <div>
-        <form class="form" method="POST" action="#">
+        <form class="form" method="POST" action="#" enctype="multipart/form-data">
             <p>
                 <label for="name">Nom : </label>
                 <input v-model="firstname" type="text" name="Nom" id="name" class="input" required>
@@ -22,8 +22,8 @@
                 <label for="age">Age : </label>
                 <input v-model.number="age" type="number" name="age" id="age">
             <p>
-                <label for="picture">Photo de profil : </label>
-                <input type="file" name="picture" id="picture">
+                <label for="image">Photo de profil : </label>
+                <input v-on:change="fileUploadFct" type="file" name="image" id="image" class="form-control-file" accept= "image/*" ref="file" >
             </p>
                 <button v-on:click.prevent="signUpFct" type="submit">
                 Je crée mon compte
@@ -39,37 +39,37 @@ import axios from 'axios';
         name: 'Signup',
         data(){
             return {
-                firstname: '',
-                lastname: '',
-                email: '',
-                password: '',
-                age: '',
-                image: null
+                // infos user
+                    firstname: '',
+                    lastname: '',
+                    email: '',
+                    password: '',
+                    age: '',
+                    picture: null
             }
         },
         methods: {
-            // fileUploadFct: function() {
-            //     this.image = this.$refs.image.files[0];
-            //     console.log(this.image);
-            // },
+            fileUploadFct: function() {
+                this.file = this.$refs.file.files[0];
+                console.log(this.file);
+            },
             signUpFct: function() {
                 const body = new FormData();
-                body.append("image", document.getElementById('picture').files[0]);
                 body.append("firstname", this.firstname);
                 body.append("lastname", this.lastname);
                 body.append("email", this.email);
                 body.append("password", this.password);
                 body.append("age", this.age);
-                // for (let value of body.values()) {
-                //     console.log(value);
-                // };
+                body.append("image", this.file);
                 console.log(body);
                 axios
                 .post('http://localhost:3000/api/users/signup', body, {
-                    headers: {'Content-Type': 'multipart/form-data' }
+                    // headers: {'Content-Type': 'multipart/form-data' }
                 })
                 .then(res => {
                     console.log(res);
+                    alert("Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.");
+                    this.$router.push('');
                 })
             }
         }

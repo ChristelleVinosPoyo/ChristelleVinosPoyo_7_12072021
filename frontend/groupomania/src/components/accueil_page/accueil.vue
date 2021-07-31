@@ -2,13 +2,17 @@
     <div>
         <appHeader></appHeader>
         <h1>fil de discussion  </h1>
-        <posted 
-            v-for="(post, index) in data" v-bind:key="index"   
-            v-bind:post="post.post" 
-            v-bind:postId="post.id"
-            v-bind:postUserId="post.user_id"
-            >
-        </posted>
+        <div class="postContainer">
+            <posted 
+                v-for="(post, index) in data" v-bind:key="index"   
+                v-bind:post="post.post" 
+                v-bind:postId="post.id"
+                v-bind:postUserId="post.user_id"
+                v-bind:admin="admin"
+                v-bind:userId="userId"
+                >
+            </posted>
+        </div>
         <createPost></createPost>
     </div>
 </template>
@@ -25,7 +29,9 @@
             return {
                 data: null,
                 postId: null,
-                postUserId: null
+                postUserId: null,
+                userId : null,
+                admin : 0,
             }
         }, 
         mounted() {
@@ -40,6 +46,21 @@
             .then(res => {
                 this.data = res.data;
             });
+            // Requête getUserId :
+            axios 
+            .post('http://localhost:3000/api/users/userId', {
+                token: localStorage.getItem('token')
+            })
+            .then(ResGetUserId => {
+                this.userId = ResGetUserId.data.userId;
+                this.admin = ResGetUserId.data.admin;
+                console.log('userId :', this.userId);
+                console.log('admin :', this.admin);
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Une erreur est survenue !");
+            })
         },
         components: {
             'posted': Posted,
@@ -69,6 +90,9 @@
     }
     .post{
         margin: 5px;
+    }
+    .comment{
+        background-color: white;
     }
 
 

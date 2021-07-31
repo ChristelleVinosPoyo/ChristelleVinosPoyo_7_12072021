@@ -2,7 +2,7 @@ const db = require('../config/db_config');
 const jwt = require('jsonwebtoken');
 
 exports.getAllPost = (req, res, next) => {
-    db.query("SELECT * FROM posts", (err, data) => {
+    db.query("SELECT * FROM posts ORDER BY data_of_post DESC", (err, data) => {
         if (err) { 
           return res.status(400).send({ message: "une erreur est survenue !" }) 
         };

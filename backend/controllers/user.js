@@ -24,8 +24,9 @@ exports.getUser = (req, res, next) => {
 
 // req à envoyer en form-data !
 exports.signup = (req, res, next) =>{
-  const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-  const user = JSON.parse(req.body.user);
+  const picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  // const user = JSON.parse(req.body.user);
+  const user = req.body;
   // vérification de la non existence de l'email
   db.query(`SELECT * FROM users WHERE email = ?`, [user.email], (err, data) => {
     if (err) { 
@@ -34,7 +35,7 @@ exports.signup = (req, res, next) =>{
     if (data.length === 0){
       bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
       .then(hash => {
-          db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl], (err, data) => {
+          db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, picture], (err, data) => {
           if (err) { return res.status(400).json({ err }) };
           res.status(200).json({ message: 'Votre compte a bien été créé !'});
           }
@@ -80,12 +81,13 @@ exports.deleteUser = (req, res, next) => {
       return res.status(400).send({ message: "une erreur est survenue !" }) 
     };
     const admin = data[0].admin;
+    const paramsId = Number(req.params.id)
     // suppression du compte si les droits admin le permettent
-    if ((req.params.id !== userId) && (admin == 0)) {
+    if ((paramsId !== userId) && (admin === 0)) {
       return res.status(400).send({ message: "Vous ne pouvez pas supprimer un compte utilisateur qui ne vous appartient pas." })
     }
-    if (((req.params.id == userId) && (admin === 0)) || req.body.admin != 0){
-      db.query(`DELETE FROM users WHERE id = ?`, [req.params.id], (err, data) => {
+    if ((paramsId === userId) || (admin === 1)) {
+      db.query(`DELETE FROM users WHERE id = ?`, [paramsId], (err, data) => {
         if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
         res.status(200).json({ message: 'Le compte utilisateur a été supprimé !'});
       })
@@ -96,12 +98,12 @@ exports.deleteUser = (req, res, next) => {
 exports.modifyUser = (req, res, next) => {
   // requête à envoyer en form-data !
   // vérification du userId de la requête (qu'il corresponde bien au user_id du profil à modifier)
-  const pictureUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-  const user = JSON.parse(req.body.user);
+  const picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  const user = req.body;
   if (req.params.id === user.userId){
     bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
     .then(hash => {
-      db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, pictureUrl, user.userId], (err, data) => {
+      db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, picture, user.userId], (err, data) => {
         if (err) { 
           return res.status(400).json({ err }) 
         };
