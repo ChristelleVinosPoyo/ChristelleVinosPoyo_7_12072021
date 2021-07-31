@@ -54,8 +54,6 @@
             .then(ResGetUserId => {
                 this.userId = ResGetUserId.data.userId;
                 this.admin = ResGetUserId.data.admin;
-                console.log('userId :', this.userId);
-                console.log('admin :', this.admin);
             })
             .catch(error => {
                 console.log(error);
@@ -93,6 +91,9 @@
     }
     .comment{
         background-color: white;
+        border-radius: 10px;
+        box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.5);
+        margin-top: 10px;
     }
 
 

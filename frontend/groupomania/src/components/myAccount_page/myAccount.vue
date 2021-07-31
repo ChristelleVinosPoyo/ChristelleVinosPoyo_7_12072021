@@ -123,7 +123,7 @@
                 .then(res => {
                     console.log(res);
                     alert("Le compte a été supprimé !");
-                    // this.$router.push(''); ça marche pas !
+                    this.$router.push('/');
                 })
                 .catch(error => {
                 console.log(error);
@@ -154,7 +154,11 @@
                 .then(res => {
                     console.log(res);
                     alert("Votre compte a été modifié succès ! Vous pouvez maintenant vous connecter.");
-                    this.$router.push('');
+                    document.location.reload();
+                })
+                .catch(error => {
+                console.log(error);
+                alert("Une erreur est survenue !");
                 })
             }
         },

@@ -69,7 +69,7 @@ import axios from 'axios';
                 .then(res => {
                     console.log(res);
                     alert("Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.");
-                    this.$router.push('');
+                    document.location.reload();
                 })
             }
         }
