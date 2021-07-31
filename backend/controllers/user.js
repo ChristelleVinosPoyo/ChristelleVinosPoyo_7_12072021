@@ -95,26 +95,58 @@ exports.deleteUser = (req, res, next) => {
   })
 }
 
-exports.modifyUser = (req, res, next) => {
-  // requête à envoyer en form-data !
-  // vérification du userId de la requête (qu'il corresponde bien au user_id du profil à modifier)
-  const picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+exports.modifyUser = (req, res, next) => {  // requête à envoyer en form-data !
   const user = req.body;
   if (req.params.id === user.userId){
-    bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
-    .then(hash => {
-      db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, picture, user.userId], (err, data) => {
+    if (req.file){
+      // supp de l'image actuelle
+      // recup de l'url de l'image
+      db.query(`SELECT picture FROM users WHERE id = ?`, [req.params.id], (err, data) => {
         if (err) { 
           return res.status(400).json({ err }) 
         };
-        res.status(200).json({ message: 'Votre compte a bien été modifié !'});
+        console.log(data[0].picture);
+        const imageUrl = data[0].picture;
+        const filename = imageUrl.split('/images/')[1];
+        console.log(filename);
+        // supp de l'image
+        fs.unlink(`images/${filename}`, () => {
+          const picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+          bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
+          .then(hash => {
+            // update du profile
+            db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ?, picture = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, picture, user.userId], (err, data) => {
+              if (err) { 
+                return res.status(400).json({ err }) 
+              };
+              res.status(200).json({ message: 'Votre compte a bien été modifié !'});
+            })
+          })
+        });
       })
-    })
+    } else {
+      bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
+      .then(hash => {
+        db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?, password = ?, age = ? WHERE id = ?`, [user.firstname, user.lastname, user.email, hash, user.age, user.userId], (err, data) => {
+          if (err) { 
+            return res.status(400).json({ err }) 
+          };
+          res.status(200).json({ message: 'Votre compte a bien été modifié !'});
+        })
+      })
+    }
+    if (req.params.id !== user.userId){
+      res.status(400).json({ message: 'Modification impossible !'});
+    }
   }
-  if (req.params.id !== user.userId){
-    res.status(400).json({ message: 'Modification impossible !'});
   }
-}
+
+
+//   }
+//   if (req.params.id !== user.userId){
+//     res.status(400).json({ message: 'Modification impossible !'});
+//   }
+// }
 
 exports.getUserId = (req, res, next) => {
   // recupération du userId à partir du TOKEN :

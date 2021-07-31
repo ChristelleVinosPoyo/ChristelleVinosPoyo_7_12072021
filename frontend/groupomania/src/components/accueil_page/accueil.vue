@@ -2,6 +2,7 @@
     <div>
         <appHeader></appHeader>
         <h1>fil de discussion  </h1>
+        <createPost></createPost>
         <div class="postContainer">
             <posted 
                 v-for="(post, index) in data" v-bind:key="index"   
@@ -13,7 +14,6 @@
                 >
             </posted>
         </div>
-        <createPost></createPost>
     </div>
 </template>
 
@@ -92,8 +92,12 @@
     .comment{
         background-color: white;
         border-radius: 10px;
-        box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.5);
+        box-shadow: 5px 5px 10px 0px rgba(77, 77, 77, 0.5);
         margin-top: 10px;
+    }
+    .logo-left{
+        height: 50px;
+        margin: 0;
     }
 
 

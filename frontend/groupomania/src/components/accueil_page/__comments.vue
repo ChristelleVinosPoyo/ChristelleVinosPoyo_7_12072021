@@ -6,7 +6,7 @@
         </div>
         <div>
             <div>
-                comment : {{ comment }}
+                {{ comment }}
             </div>
             <div>
                 <button 

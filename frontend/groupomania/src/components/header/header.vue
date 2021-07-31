@@ -1,6 +1,7 @@
 <template>
     <div class="navBar">
         <nav>
+            <!-- <img class="logo-left" src="../../assets/logo-left-red.png" alt="logo"> -->
             <router-link to="/accueil">
                 Accueil
             </router-link> |
@@ -25,6 +26,6 @@
 
 </script>
 
-<style>
+<style >
 
 </style>
