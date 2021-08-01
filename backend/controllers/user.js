@@ -35,6 +35,7 @@ exports.signup = (req, res, next) =>{
     if (data.length === 0){
       bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
       .then(hash => {
+        console.log(user);
           db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, picture], (err, data) => {
           if (err) { return res.status(400).json({ err }) };
           res.status(200).json({ message: 'Votre compte a bien été créé !'});
@@ -49,7 +50,7 @@ exports.signup = (req, res, next) =>{
 exports.login = (req, res, next) => {
   // rechercher du hash dans la BDD
   db.query(`SELECT * FROM users WHERE email= ?`, [req.body.email], (err, data) => {
-      if (err) { 
+      if (err || data[0] === undefined) { 
         return res.status(400).send({ message: "utilisateur non trouvé !" }) 
       };
       bcrypt.compare(req.body.password, data[0].password)

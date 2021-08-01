@@ -44,6 +44,7 @@
                 </comments>
                 <div class="send-comment">
                     <form action="">
+                        <p v-for="(error, index) in errors" v-bind:key="index">{{ error }}</p>
                         <p>
                             <textarea 
                             v-model="newComment" name="createpost" placeholder="Ecris ton commentaire ici !">
@@ -69,6 +70,7 @@
         name: 'Posted',
         data(){
             return {
+                errors: [],
                 toggle : false,
                 toggleModifyPost: false,
                 firstname: '',
@@ -107,17 +109,11 @@
             })
             .then(res => {
                 this.comments = res.data;
-                console.log(this.comments);
             });
         },
         methods: {
             toggleFct: function() {
-                if (this.toggle === true){
-                    this.toggle = false
-                }
-                if (this.toggle === false){
-                    this.toggle = true
-                }
+                this.toggle = !this.toggle
             },
             // Requête deletePost
             deletePostFct: function() {
@@ -138,45 +134,33 @@
             })
             },
             createCommentFct: function() {
-                // Requête createComment :
-                console.log(this.newComment, this.userId, this.postId,);
-                axios
-                .post('http://localhost:3000/api/comments', {
-                    comment: this.newComment,
-                    user_id: this.userId,
-                    post_id: this.postId
-                }, {headers: {
-                        Authorization: 'Bearer '+ localStorage.getItem('token')
-                    }
-                })
-                .then(res => {
-                    console.log(res.data);
-                    alert("commentaire envoyé !");
-                    document.location.reload();
-                })
-                .catch(error => {
-                console.log(error);
-                alert("Une erreur est survenue !");
-                })
+                this.errors = [];
+                if (!this.newComment){
+                    this.errors.push('Une texte est requis.');
+                }
+                if ((this.errors.length === 0)){
+                    // Requête createComment :
+                    axios
+                    .post('http://localhost:3000/api/comments', {
+                        comment: this.newComment,
+                        user_id: this.userId,
+                        post_id: this.postId
+                    }, {headers: {
+                            Authorization: 'Bearer '+ localStorage.getItem('token')
+                        }
+                    })
+                    .then(res => {
+                        console.log(res.data);
+                        alert("commentaire envoyé !");
+                        document.location.reload();
+                    })
+                    .catch(error => {
+                    console.log(error);
+                    alert("Une erreur est survenue !");
+                    })
+                }
             },
-            deleteCommentFct: function() {
-                console.log('commentId depuis deleteCommentFct : ', this.comment.id);
-                axios
-                .delete(`http://localhost:3000/api/comments/${this.commentId}`, {
-                    headers: {
-                        Authorization: 'Bearer '+ localStorage.getItem('token')
-                    }
-                })
-                .then(res => {
-                    console.log(res);
-                    alert("Message supprimé !");
-                    document.location.reload();
-                })
-                .catch(error => {
-                console.log(error);
-                alert("Une erreur est survenue !");
-            })
-            },
+
             // Requête modifyPost
             modifyPostFct: function() {
                 axios

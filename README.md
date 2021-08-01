@@ -7,9 +7,9 @@ Juillet 2021
 ### Prerequis ###
 
 Ce projet necessite l'installation de : 
-    MySQL : http://dev.mysql.com/downloads/mysql/#downloads
     Node : https://nodejs.org/fr/download/ 
-    Vue CLI : 
+    MySQL : http://dev.mysql.com/downloads/mysql/#downloads
+    Vue CLI : npm install -g @vue/cli
 
 
 ### Installation ###
@@ -17,7 +17,7 @@ Ce projet necessite l'installation de :
 DATABASE :
 
     Executez les commandes suivante pour importer la base de données : 
-        mysql -h localhost -u root -p < P7_02_Database.sql
+        mysql -h localhost -u root -p root < P7_02_Database.sql
 
 BACKEND :
 

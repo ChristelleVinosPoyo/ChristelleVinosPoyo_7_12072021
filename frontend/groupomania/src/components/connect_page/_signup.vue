@@ -1,6 +1,7 @@
 <template>
     <div>
         <form class="form" method="POST" action="#" enctype="multipart/form-data">
+            <p v-for="(error, index) in errors" v-bind:key="index">{{ error }}</p>
             <p>
                 <label for="name">Nom : </label>
                 <input v-model="firstname" type="text" name="Nom" id="name" class="input" required>
@@ -33,44 +34,66 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'; 
 
     export default {
         name: 'Signup',
         data(){
             return {
+                    errors: [],
                 // infos user
-                    firstname: '',
-                    lastname: '',
-                    email: '',
-                    password: '',
-                    age: '',
+                    firstname: null,
+                    lastname: null,
+                    email: null,
+                    password: null,
+                    age: null,
                     picture: null
             }
         },
         methods: {
             fileUploadFct: function() {
                 this.file = this.$refs.file.files[0];
-                console.log(this.file);
             },
             signUpFct: function() {
-                const body = new FormData();
-                body.append("firstname", this.firstname);
-                body.append("lastname", this.lastname);
-                body.append("email", this.email);
-                body.append("password", this.password);
-                body.append("age", this.age);
-                body.append("image", this.file);
-                console.log(body);
-                axios
-                .post('http://localhost:3000/api/users/signup', body, {
-                    // headers: {'Content-Type': 'multipart/form-data' }
-                })
-                .then(res => {
-                    console.log(res);
-                    alert("Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.");
-                    document.location.reload();
-                })
+                this.errors = [];
+                if (!this.firstname){
+                    this.errors.push('Le champ Nom est requis.');
+                }
+                if (!this.lastname){
+                    this.errors.push('Le champ Prénom est requis.');
+                }
+                if (!this.email){
+                    this.errors.push('Le champ Email est requis.');
+                }
+                if (!this.age){
+                    this.errors.push('Le champ Age est requis.');
+                }
+                if (!this.password){
+                    this.errors.push('Le champ Mot de passe est requis.');
+                }
+                if (!this.file){
+                    this.errors.push('Une image est requise.');
+                }
+                if ((this.errors.length === 0)){
+                    const body = new FormData();
+                    body.append("firstname", this.firstname);
+                    body.append("lastname", this.lastname);
+                    body.append("email", this.email);
+                    body.append("password", this.password);
+                    body.append("age", this.age);
+                    body.append("image", this.file);
+                    axios
+                    .post('http://localhost:3000/api/users/signup', body)
+                    .then(res => {
+                        console.log(res);
+                        alert("Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.");
+                        document.location.reload();
+                    })
+                    .catch(error => {
+                    console.log(error);
+                    alert("Une erreur est survenue TOTOTO !");
+                    })       
+                }
             }
         }
     }

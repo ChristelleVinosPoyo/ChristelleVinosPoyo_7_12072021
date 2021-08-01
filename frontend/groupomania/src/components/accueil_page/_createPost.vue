@@ -1,6 +1,7 @@
 <template>
     <div class="create-post">
         <form action="">
+            <p v-for="(error, index) in errors" v-bind:key="index">{{ error }}</p>
             <p>
                 <textarea v-model="post" name="createpost" placeholder="Ecris ton message ici !"></textarea>
             </p>
@@ -18,6 +19,7 @@
         name: 'CreatePost',
         data(){
             return {
+                    errors: [],
                     userId: '',
                     post: '',
                 }
@@ -40,25 +42,31 @@
         methods: {
             createPostFct: function() {
                 // Requête createPost :
-                axios
-                .post('http://localhost:3000/api/posts', {
-                    userId: this.userId,
-                    post: this.post
-                }, 
-                    {headers: {
-                    Authorization: 'Bearer '+ localStorage.getItem('token')
-                    }}
-                )
-                .then(res => {
-                    console.log('res createPost :', res);
-                    console.log('post :', this.post);
-                    alert("Message envoyé !");
-                    document.location.reload();
-                })
-                .catch(error => {
-                console.log(error);
-                alert("Une erreur est survenue !");
-                })
+                this.errors = [];
+                if (!this.post){
+                    this.errors.push('Un texte est requis.');
+                }
+                if ((this.errors.length === 0)){
+                    axios
+                    .post('http://localhost:3000/api/posts', {
+                        userId: this.userId,
+                        post: this.post
+                    }, 
+                        {headers: {
+                        Authorization: 'Bearer '+ localStorage.getItem('token')
+                        }}
+                    )
+                    .then(res => {
+                        console.log('res createPost :', res);
+                        console.log('post :', this.post);
+                        alert("Message envoyé !");
+                        document.location.reload();
+                    })
+                    .catch(error => {
+                    console.log(error);
+                    alert("Une erreur est survenue !");
+                    })
+                }
             }
         }
 

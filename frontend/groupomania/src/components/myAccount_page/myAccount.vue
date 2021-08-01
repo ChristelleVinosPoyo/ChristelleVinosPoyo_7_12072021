@@ -17,6 +17,7 @@
             </div>
             <div v-if="toggle">
         <form class="form" method="POST" action="#" enctype="multipart/form-data">
+            <p v-for="(error, index) in errors" v-bind:key="index">{{ error }}</p>
             <p>
                 <label for="name">Nom : </label>
                 <input v-model="firstname" type="text" name="Nom" id="name" class="input" required>
@@ -60,6 +61,7 @@
         name: "MyAccount",
         data(){
             return {
+                errors: [],
                 toggle: false,
                 // infos utilisateurs :
                 userId: null,
@@ -69,14 +71,6 @@
                 email: '',
                 password: '',
                 age: '',
-                // infos utilisateurs modifiées :
-                // newFirstname: '',
-                // newLastname: '',
-                // Email: '',
-                // newEmail: '',
-                // newPassword: '',
-                // newAge: '',
-                // newPicture: null
                 }
         },
         mounted(){
@@ -136,31 +130,49 @@
                 console.log('file :',this.file);
             },
             modifyUserFct: function() {
-                console.log('userId de modifyUserFct :', this.userId);
-                const body = new FormData();
-                body.append("userId", this.userId);
-                body.append("firstname", this.firstname);
-                body.append("lastname", this.lastname);
-                body.append("email", this.email);
-                body.append("password", this.password);
-                body.append("age", this.age);
-                body.append("image", this.file);
-                console.log(body);
-                axios
-                .put(`http://localhost:3000/api/users/${this.userId}`, body, {
-                    headers: {
-                        Authorization: 'Bearer '+ localStorage.getItem('token')
-                    }
-                })
-                .then(res => {
-                    console.log(res);
-                    alert("Votre compte a été modifié succès ! Vous pouvez maintenant vous connecter.");
-                    document.location.reload();
-                })
-                .catch(error => {
-                console.log(error);
-                alert("Une erreur est survenue !");
-                })
+
+                this.errors = [];
+                if (!this.firstname){
+                    this.errors.push('Le champ Nom est requis.');
+                }
+                if (!this.lastname){
+                    this.errors.push('Le champ Prénom est requis.');
+                }
+                if (!this.email){
+                    this.errors.push('Le champ Email est requis.');
+                }
+                if (!this.age){
+                    this.errors.push('Le champ Age est requis.');
+                }
+                if (!this.password){
+                    this.errors.push('Le champ Mot de passe est requis.');
+                }
+                if ((this.errors.length === 0)){
+                    const body = new FormData();
+                    body.append("userId", this.userId);
+                    body.append("firstname", this.firstname);
+                    body.append("lastname", this.lastname);
+                    body.append("email", this.email);
+                    body.append("password", this.password);
+                    body.append("age", this.age);
+                    body.append("image", this.file);
+                    console.log(body);
+                    axios
+                    .put(`http://localhost:3000/api/users/${this.userId}`, body, {
+                        headers: {
+                            Authorization: 'Bearer '+ localStorage.getItem('token')
+                        }
+                    })
+                    .then(res => {
+                        console.log(res);
+                        alert("Votre compte a été modifié succès ! Vous pouvez maintenant vous connecter.");
+                        document.location.reload();
+                    })
+                    .catch(error => {
+                    console.log(error);
+                    alert("Une erreur est survenue !");
+                    })
+                }
             }
         },
         components: {

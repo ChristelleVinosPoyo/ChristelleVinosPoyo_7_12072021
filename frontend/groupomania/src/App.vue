@@ -9,7 +9,7 @@
 <style lang="scss">
 body {
   margin: 0 auto;
-  max-width: 1700px;
+  max-width: 700px;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
