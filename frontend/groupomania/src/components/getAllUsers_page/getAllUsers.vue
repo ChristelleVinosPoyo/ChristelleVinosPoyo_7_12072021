@@ -9,11 +9,14 @@
             <div>{{ user.firstname }} {{ user.lastname }} {{ user.email }}</div>
             <!-- div bouton "supprimer le compte" pour admin : -->
         </div>
+
+        <appFooter></appFooter>
     </div>
 </template>
 
 <script>
     import Header from '../header/header.vue'
+    import Footer from '../header/footer.vue'
     import axios from 'axios'
     
     export default {
@@ -41,6 +44,7 @@
         },
         components: {
             'appHeader': Header,
+            'appFooter': Footer,
         },
     }
 

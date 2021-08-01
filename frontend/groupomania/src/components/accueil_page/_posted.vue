@@ -42,7 +42,7 @@
                     v-bind:commentUserId="comment.user_id"
                     > 
                 </comments>
-                <div>
+                <div class="send-comment">
                     <form action="">
                         <p>
                             <textarea 
@@ -62,7 +62,6 @@
 <script>
 
     import Comments from './__comments.vue'
-    // import ModifyPost from './__modifyPost.vue'
     import axios from 'axios'
 
     export default {
@@ -202,7 +201,6 @@
         },
         components: {
             'comments': Comments,
-            // 'modifyPost': ModifyPost
         },
 
     }

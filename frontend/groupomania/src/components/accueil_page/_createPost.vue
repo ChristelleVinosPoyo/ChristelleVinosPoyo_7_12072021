@@ -70,8 +70,16 @@
         padding: 10px;
         margin-top: 15px;
         margin-bottom: 15px;
-        background-color: #b4b4b4;
-        border-radius: 5px;
+        & textarea{
+            border: none;
+            border-radius: 10px;
+            background-color: #d6d6d6;
+
+        }
+        & p{
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
     }
     textarea {
         width: 90%;

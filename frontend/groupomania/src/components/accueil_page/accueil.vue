@@ -1,7 +1,7 @@
 <template>
     <div>
         <appHeader></appHeader>
-        <h1>fil de discussion  </h1>
+        <h1>Fil de discussion  </h1>
         <createPost></createPost>
         <div class="postContainer">
             <posted 
@@ -14,6 +14,7 @@
                 >
             </posted>
         </div>
+        <appFooter></appFooter>
     </div>
 </template>
 
@@ -21,6 +22,7 @@
     import Posted from './_posted.vue'
     import CreatePost from './_createPost.vue'
     import Header from '../header/header.vue'
+    import Footer from '../header/footer.vue'
     import axios from 'axios'
 
     export default {
@@ -64,6 +66,7 @@
             'posted': Posted,
             'createPost': CreatePost,
             'appHeader': Header,
+            'appFooter': Footer
         },
 
     }
@@ -94,10 +97,38 @@
         border-radius: 10px;
         box-shadow: 5px 5px 10px 0px rgba(77, 77, 77, 0.5);
         margin-top: 10px;
+        margin-bottom: 10px;
     }
     .logo-left{
         height: 50px;
         margin: 0;
+    }
+    .send-comment{
+        & p{
+            margin-bottom: 5px;
+        }
+        & textarea{
+            border: none;
+            border-radius: 10px;
+        }
+    }
+    .sended-comment{
+        & div{
+            padding-bottom: 5px;
+        }
+    }
+    .modify-comment{
+        & p{
+            margin-top: 5px;
+            margin-bottom: 0;
+        }
+        & button{
+            margin-bottom: 10px;
+        }
+        & textarea{
+            border: #b4b4b4 1px solid;
+            border-radius: 10px;
+        }
     }
 
 

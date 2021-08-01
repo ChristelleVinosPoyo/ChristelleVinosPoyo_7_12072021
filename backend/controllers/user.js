@@ -87,9 +87,21 @@ exports.deleteUser = (req, res, next) => {
       return res.status(400).send({ message: "Vous ne pouvez pas supprimer un compte utilisateur qui ne vous appartient pas." })
     }
     if ((paramsId === userId) || (admin === 1)) {
-      db.query(`DELETE FROM users WHERE id = ?`, [paramsId], (err, data) => {
-        if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
-        res.status(200).json({ message: 'Le compte utilisateur a été supprimé !'});
+      // recup de l'url de l'image
+      db.query(`SELECT picture FROM users WHERE id = ?`, [paramsId], (err, data) => {
+        if (err) { 
+          return res.status(400).json({ err }) 
+        };
+        const imageUrl = data[0].picture;
+        const filename = imageUrl.split('/images/')[1];
+        // supp de l'image
+        fs.unlink(`images/${filename}`, () => {
+          db.query(`DELETE FROM users WHERE id = ?`, [paramsId], (err, data) => {
+            if (err) { return res.status(400).send({ message: "une erreur est survenue !" }) };
+            res.status(200).json({ message: 'Le compte utilisateur a été supprimé !'});
+          })
+        })
+
       })
     }
   })
@@ -105,10 +117,8 @@ exports.modifyUser = (req, res, next) => {  // requête à envoyer en form-data 
         if (err) { 
           return res.status(400).json({ err }) 
         };
-        console.log(data[0].picture);
         const imageUrl = data[0].picture;
         const filename = imageUrl.split('/images/')[1];
-        console.log(filename);
         // supp de l'image
         fs.unlink(`images/${filename}`, () => {
           const picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;

@@ -20,10 +20,10 @@ body {
 }
 a {
   text-decoration: none;
-  color: #091f43;
+  color: white;
 }
 nav {
-  background-color: #b4b4b4;
+  background-color: #091f43;
   padding-top: 5px;
   padding-bottom: 5px;
   text-align: right;
@@ -41,6 +41,16 @@ button {
 }
 .button:hover {
   transform: scale(1.05);
+}
+.footer{
+  margin-top: 10px;
+  background-color: #091f43;
+  height: 50px;
+  overflow: hidden;
+  & img{
+    margin: 0;
+    width: 200px;
+  }
 }
 
 </style>

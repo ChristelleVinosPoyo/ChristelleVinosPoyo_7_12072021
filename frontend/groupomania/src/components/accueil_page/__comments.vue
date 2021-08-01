@@ -4,7 +4,7 @@
         <div class="postUserInfo"> <!--infos sur le User qui a écrit ce commentaire-->
             {{ firstname }} {{ lastname }}
         </div>
-        <div>
+        <div class="sended-comment">
             <div>
                 {{ comment }}
             </div>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div v-if="toggleModify">
+        <div class="modify-comment" v-if="toggleModify">
             <form action="">
                 <p>
                     <textarea 
@@ -134,28 +134,6 @@ export default {
                 alert("Une erreur est survenue ! Etes-vous bien l'auteur de ce message ?");
             })
             },
-                    // createCommentFct: function() {
-                    //     // Requête createComment :
-                    //     console.log(this.newComment, this.userId, this.postId,);
-                    //     axios
-                    //     .post('http://localhost:3000/api/comments', {
-                    //         comment: this.newComment,
-                    //         user_id: this.userId,
-                    //         post_id: this.postId
-                    //     }, {headers: {
-                    //             Authorization: 'Bearer '+ localStorage.getItem('token')
-                    //         }
-                    //     })
-                    //     .then(res => {
-                    //         console.log(res.data);
-                    //         alert("commentaire envoyé !");
-                    //         document.location.reload();
-                    //     })
-                    //     .catch(error => {
-                    //     console.log(error);
-                    //     alert("Une erreur est survenue !");
-                    //     })
-                    // },
     }
 }
 

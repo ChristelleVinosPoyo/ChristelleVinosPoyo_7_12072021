@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container-connexion">
         <img class="logo" alt="Vue logo" src="../../assets/logo.png">
         <h1>Bienvenue sur votre réseau social</h1>
         <div>
@@ -48,5 +48,13 @@
 <style lang="scss">
     .logo {
         width: 250px;
+        margin: 0;
+    }
+    .container-connexion{
+        padding-bottom: 50px;
+        & h1{
+            margin-top: 0px;
+            margin-bottom: 50px;
+        }
     }
 </style>
