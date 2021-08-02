@@ -35,7 +35,6 @@ exports.signup = (req, res, next) =>{
     if (data.length === 0){
       bcrypt.hash(user.password, 10) // 10 tours d'execution de l'algorythme de hashage
       .then(hash => {
-        console.log(user);
           db.query(`INSERT INTO users (firstname, lastname, email, password, age, picture) VALUES (?, ?, ?, ?, ?, ?)`, [user.firstname, user.lastname, user.email, hash, user.age, picture], (err, data) => {
           if (err) { return res.status(400).json({ err }) };
           res.status(200).json({ message: 'Votre compte a bien été créé !'});

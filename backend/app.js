@@ -4,11 +4,11 @@ const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const path = require('path');
 const helmet = require('helmet');
-const rateLimit = require("express-rate-limit"); // pour limiter le nombres d'appels faits à l'API
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 10 minutes
-    max: 200 // Le client pourra faire 200 requêtes toutes les 10 minutes
-  });
+// const rateLimit = require("express-rate-limit"); // pour limiter le nombres d'appels faits à l'API
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 10 minutes
+//     max: 200 // Le client pourra faire 200 requêtes toutes les 10 minutes
+//   });
   
 const postRoutes = require('./routes/post'); 
 const userRoutes = require('./routes/user');
@@ -28,7 +28,7 @@ app.use((req, res, next) => {  //Middleware general appliqué à toutes les rout
 // sécurité
 app.use(express.json()); // pour parlier à l'utilisation de bodyparser qui est déprécié 
 app.use(helmet());
-app.use(limiter);
+// app.use(limiter);
 
 // route vers les ressources du dossier static (local) 'images'
 app.use('/images', express.static(path.join(__dirname, 'images'))); // express.static pour servir le dossier statique 'images' / path.join pour créer un chemin dynamique vers l'image souhaitée

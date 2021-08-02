@@ -91,7 +91,7 @@ import axios from 'axios';
                     })
                     .catch(error => {
                     console.log(error);
-                    alert("Une erreur est survenue TOTOTO !");
+                    alert("Une erreur est survenue !");
                     })       
                 }
             }

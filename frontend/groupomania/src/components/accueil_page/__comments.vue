@@ -51,7 +51,7 @@ export default {
             // info du user qui a commenté :
             firstname: "",
             lastname: "",
-            picture: "",
+            // picture: "",
         }
     },
     props: ['commentId', 'comment', 'commentUserId'],
@@ -69,7 +69,7 @@ export default {
                 if (res.data[0]){
                     this.firstname = res.data[0].firstname;
                     this.lastname = res.data[0].lastname;
-                    this.picture = res.data[0].picture
+                    // this.picture = res.data[0].picture
                 } else {
                     this.firstname = 'Utilisateur inconnu';
                 }
