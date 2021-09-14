@@ -23,7 +23,7 @@ BACKEND :
 
     Executez les commandes suivantes dans le dossier "backend": 
         "npm install" 
-        "node server"
+        "nodemon server"
 
     Il est necessaire de modifier le fichier ".env.test" présent en racine :
     - Renommez le fichier ".env"
